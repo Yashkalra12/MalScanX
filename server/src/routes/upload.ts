@@ -8,21 +8,8 @@ import { broadcastLog } from './logs';
 
 const router = express.Router();
 
-// Configure multer for file upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../../uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    // Generate unique filename
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Configure multer for file upload (memory storage for Vercel)
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
@@ -99,7 +86,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     // Create file record in database
     const fileRecord = new File({
       filename: req.file.originalname,
-      path: req.file.path,
+      path: 'memory://' + req.file.originalname, // Virtual path for memory storage
       status: 'pending',
       uploadedAt: new Date()
     });
@@ -110,11 +97,20 @@ router.post('/', upload.single('file'), async (req, res) => {
     console.log(uploadMessage);
     broadcastLog(uploadMessage, 'success');
 
-    // Add scan job to queue
-    scannerWorker.addJob({
-      fileId: fileRecord._id?.toString() || '',
-      filePath: req.file.path
+    // Scan file content directly (for Vercel serverless)
+    const fileContent = req.file.buffer.toString('utf8');
+    const isInfected = await scannerWorker.scanContent(fileContent, req.file.originalname);
+
+    // Update file status
+    await File.findByIdAndUpdate(fileRecord._id, {
+      status: isInfected ? 'infected' : 'clean',
+      result: isInfected ? 'infected' : 'clean',
+      scannedAt: new Date()
     });
+
+    const scanMessage = `Scan completed for ${req.file.originalname}: ${isInfected ? 'INFECTED' : 'CLEAN'}`;
+    console.log(scanMessage);
+    broadcastLog(scanMessage, isInfected ? 'error' : 'success');
 
     res.json({
       success: true,

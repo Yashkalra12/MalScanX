@@ -105,10 +105,20 @@ class ScannerWorker {
     try {
       // Read file content
       const content = fs.readFileSync(filePath, 'utf8').toLowerCase();
+      return this.scanContent(content, filePath);
+    } catch (error) {
+      console.error('Error scanning file:', error);
+      return false;
+    }
+  }
+
+  public async scanContent(content: string, filename: string): Promise<boolean> {
+    try {
+      const lowerContent = content.toLowerCase();
       
       // Check for malicious keywords
       for (const keyword of this.maliciousKeywords) {
-        if (content.includes(keyword.toLowerCase())) {
+        if (lowerContent.includes(keyword.toLowerCase())) {
           const keywordMessage = `Found malicious keyword: ${keyword}`;
           console.log(keywordMessage);
           broadcastLog(keywordMessage, 'warning');
@@ -117,7 +127,7 @@ class ScannerWorker {
       }
 
       // Additional checks for specific file types
-      const ext = path.extname(filePath).toLowerCase();
+      const ext = path.extname(filename).toLowerCase();
       
       if (ext === '.pdf') {
         // For PDFs, we could add more sophisticated checks
@@ -135,7 +145,7 @@ class ScannerWorker {
 
       return false;
     } catch (error) {
-      console.error('Error scanning file:', error);
+      console.error('Error scanning content:', error);
       return false;
     }
   }

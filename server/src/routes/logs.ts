@@ -30,6 +30,19 @@ const sseMiddleware = (req: express.Request, res: express.Response, next: expres
     clients.delete(res);
   });
 
+  // Handle Vercel serverless timeout
+  setTimeout(() => {
+    if (clients.has(res)) {
+      res.write(`data: ${JSON.stringify({
+        message: 'Serverless function timeout - reconnecting...',
+        type: 'warning',
+        timestamp: new Date().toISOString()
+      })}\n\n`);
+      clients.delete(res);
+      res.end();
+    }
+  }, 25000); // 25 seconds timeout for Vercel
+
   next();
 };
 
