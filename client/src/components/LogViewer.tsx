@@ -23,7 +23,11 @@ const LogViewer: React.FC = () => {
 
   useEffect(() => {
     // Simulate WebSocket connection for real-time logs
-    const eventSource = new EventSource('http://localhost:3001/logs/stream');
+    const eventSource = new EventSource(
+      process.env.NODE_ENV === 'production' 
+        ? 'https://malscanx-yash-backend.vercel.app/logs/stream'
+        : 'http://localhost:3001/logs/stream'
+    );
     
     eventSource.onopen = () => {
       setIsConnected(true);

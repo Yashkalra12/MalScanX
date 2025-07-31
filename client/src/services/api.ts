@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { FileMetadata, UploadResponse, FilesResponse } from '../types';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.REACT_APP_API_URL || 'https://your-backend-url.com'
+  ? process.env.REACT_APP_API_URL || 'https://malscanx-yash-backend.vercel.app'
   : 'http://localhost:3001';
 
 const api = axios.create({
