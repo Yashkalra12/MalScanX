@@ -1,0 +1,12 @@
+This is a test file with malicious content.
+It contains dangerous keywords like:
+rm -rf /
+eval("malicious code")
+bitcoin mining script
+crypto wallet
+malware payload
+virus signature
+trojan horse
+backdoor access
+keylogger data
+rootkit installation 
