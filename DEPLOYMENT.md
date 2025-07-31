@@ -53,12 +53,7 @@ This project is configured for **manual deployment** using the Vercel dashboard 
    - **Output Directory**: `dist`
    - **Install Command**: `npm install`
 
-4. **Environment Variables**:
-   ```
-   NODE_ENV=production
-   MONGODB_URI=your-mongodb-connection-string
-   PORT=3001
-   ```
+
 
 5. **Deploy**: Click "Deploy"
 
@@ -108,9 +103,7 @@ REACT_APP_API_URL=https://your-backend-url.com
 
 ### **Backend (Vercel)**
 ```env
-NODE_ENV=production
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/malscanx
-PORT=3001
+MONGODB_URI=your-mongodb-connection-string
 ```
 
 ## 📊 **Deployment Steps**
@@ -118,19 +111,14 @@ PORT=3001
 ### **Step 1: Deploy Backend**
 1. Go to Vercel dashboard
 2. Import `server` directory
-3. Set environment variables
-4. Deploy and get the URL
+3. Deploy and get the URL
 
 ### **Step 2: Deploy Frontend**
 1. Go to Vercel dashboard
 2. Import `client` directory
-3. Set `REACT_APP_API_URL` to your backend URL
-4. Deploy
+3. Deploy
 
-### **Step 3: Update API URL**
-1. Go to frontend project settings
-2. Update `REACT_APP_API_URL` environment variable
-3. Redeploy frontend
+
 
 ## 🔄 **Automatic Deployments**
 
