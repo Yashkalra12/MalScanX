@@ -1,95 +1,103 @@
-# 🚀 Deployment Guide
+# 🚀 Manual Deployment Guide
 
-## 📋 **Deployment Options**
+## 📋 **Deployment Strategy**
 
-### **Option 1: Vercel + Railway (Recommended)**
-- **Frontend**: Vercel (automatic deployments)
-- **Backend**: Railway (Node.js hosting)
+This project is configured for **manual deployment** using the Vercel dashboard for both frontend and backend.
 
-### **Option 2: Vercel + Render**
-- **Frontend**: Vercel
-- **Backend**: Render (free tier available)
+## 🎯 **Deployment Options**
 
-### **Option 3: Vercel + Heroku**
-- **Frontend**: Vercel
-- **Backend**: Heroku (paid)
+### **Option 1: Vercel Dashboard (Recommended)**
+- **Frontend**: Deploy from Vercel dashboard
+- **Backend**: Deploy from Vercel dashboard
 
-## 🎯 **Quick Setup (Vercel + Railway)**
+### **Option 2: Railway for Backend**
+- **Frontend**: Vercel dashboard
+- **Backend**: Railway (alternative to Vercel)
 
-### **1. Frontend Deployment (Vercel)**
+## 🚀 **Quick Setup (Vercel Dashboard)**
 
-1. **Connect to Vercel**:
-   ```bash
-   npm i -g vercel
-   vercel login
+### **1. Frontend Deployment**
+
+1. **Go to Vercel Dashboard**: https://vercel.com/dashboard
+
+2. **Import Project**:
+   - Click "New Project"
+   - Import your GitHub repository: `Yashkalra12/MalScanX`
+   - Select the `client` directory as the root directory
+
+3. **Configure Settings**:
+   - **Framework Preset**: Vite
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+   - **Install Command**: `npm install`
+
+4. **Environment Variables**:
+   ```
+   REACT_APP_API_URL=https://your-backend-url.com
    ```
 
-2. **Deploy from project root**:
-   ```bash
-   vercel
-   ```
+5. **Deploy**: Click "Deploy"
 
-3. **Configure environment variables** in Vercel dashboard:
-   ```
-   REACT_APP_API_URL=https://your-railway-backend-url.com
-   ```
+### **2. Backend Deployment**
 
-### **2. Backend Deployment (Railway)**
+1. **Go to Vercel Dashboard**: https://vercel.com/dashboard
 
-1. **Create Railway account**: https://railway.app
+2. **Import Project**:
+   - Click "New Project"
+   - Import your GitHub repository: `Yashkalra12/MalScanX`
+   - Select the `server` directory as the root directory
 
-2. **Connect GitHub repository**
+3. **Configure Settings**:
+   - **Framework Preset**: Node.js
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+   - **Install Command**: `npm install`
 
-3. **Add environment variables**:
+4. **Environment Variables**:
    ```
    NODE_ENV=production
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/malscanx
+   MONGODB_URI=your-mongodb-connection-string
    PORT=3001
    ```
 
-4. **Deploy automatically** via GitHub Actions
+5. **Deploy**: Click "Deploy"
 
-## 🔧 **GitHub Actions Setup**
+## 🔧 **Configuration Files**
 
-### **Required Secrets**
+### **Frontend (client/vercel.json)**
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://your-backend-url.com/api/$1"
+    }
+  ]
+}
+```
 
-Add these secrets in your GitHub repository settings:
-
-#### **For Vercel Frontend**:
-- `VERCEL_TOKEN`: Your Vercel API token
-- `VERCEL_ORG_ID`: Your Vercel organization ID
-- `VERCEL_PROJECT_ID`: Your Vercel project ID
-
-#### **For Railway Backend**:
-- `RAILWAY_TOKEN`: Your Railway API token
-
-#### **For Render Backend** (alternative):
-- `RENDER_TOKEN`: Your Render API token
-- `RENDER_SERVICE_ID`: Your Render service ID
-
-### **How to Get Secrets**
-
-#### **Vercel Secrets**:
-1. Go to https://vercel.com/account/tokens
-2. Create new token
-3. Get org/project IDs from Vercel dashboard
-
-#### **Railway Secrets**:
-1. Go to Railway dashboard
-2. Navigate to your project
-3. Go to Settings → Tokens
-4. Create new token
-
-## 📁 **Deployment Files**
-
-### **Frontend Configuration**
-- `vercel.json`: Vercel deployment config
-- `.github/workflows/deploy-frontend.yml`: GitHub Actions for frontend
-
-### **Backend Configuration**
-- `railway.json`: Railway deployment config
-- `render.yaml`: Render deployment config
-- `.github/workflows/deploy-backend.yml`: GitHub Actions for backend
+### **Backend (server/vercel.json)**
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dist/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/index.js"
+    }
+  ]
+}
+```
 
 ## 🌐 **Environment Variables**
 
@@ -98,26 +106,39 @@ Add these secrets in your GitHub repository settings:
 REACT_APP_API_URL=https://your-backend-url.com
 ```
 
-### **Backend (Railway/Render)**
+### **Backend (Vercel)**
 ```env
 NODE_ENV=production
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/malscanx
 PORT=3001
 ```
 
+## 📊 **Deployment Steps**
+
+### **Step 1: Deploy Backend**
+1. Go to Vercel dashboard
+2. Import `server` directory
+3. Set environment variables
+4. Deploy and get the URL
+
+### **Step 2: Deploy Frontend**
+1. Go to Vercel dashboard
+2. Import `client` directory
+3. Set `REACT_APP_API_URL` to your backend URL
+4. Deploy
+
+### **Step 3: Update API URL**
+1. Go to frontend project settings
+2. Update `REACT_APP_API_URL` environment variable
+3. Redeploy frontend
+
 ## 🔄 **Automatic Deployments**
 
-### **GitHub Actions Workflows**
-
-1. **Frontend Deployment**:
-   - Triggers on changes to `client/` directory
-   - Builds and deploys to Vercel
-   - Automatic on push to main branch
-
-2. **Backend Deployment**:
-   - Triggers on changes to `server/` directory
-   - Builds TypeScript and deploys to Railway
-   - Automatic on push to main branch
+### **Vercel Dashboard**
+- **Automatic deployments** on every push to main branch
+- **Preview deployments** for pull requests
+- **Custom domains** support
+- **SSL certificates** included
 
 ## 📊 **Monitoring & Health Checks**
 
@@ -127,8 +148,8 @@ PORT=3001
 
 ### **Logs**
 - **Vercel**: Built-in logging dashboard
-- **Railway**: Real-time logs in dashboard
-- **GitHub Actions**: Workflow logs in Actions tab
+- **Real-time logs** in Vercel dashboard
+- **Function logs** for serverless functions
 
 ## 🚨 **Troubleshooting**
 
@@ -165,22 +186,18 @@ curl https://your-backend-url.com/health
 
 ## 📈 **Performance Optimization**
 
-### **Frontend (Vercel)**
-- Automatic CDN distribution
-- Image optimization
-- Code splitting
-- Caching headers
-
-### **Backend (Railway)**
-- Auto-scaling based on traffic
-- Health check monitoring
-- Automatic restarts on failure
+### **Vercel Features**
+- **Automatic CDN** distribution
+- **Image optimization**
+- **Code splitting**
+- **Caching headers**
+- **Edge functions** support
 
 ## 🔒 **Security**
 
 ### **Environment Variables**
+- Use Vercel's built-in secret management
 - Never commit secrets to Git
-- Use platform-specific secret management
 - Rotate tokens regularly
 
 ### **CORS Configuration**
@@ -192,13 +209,12 @@ curl https://your-backend-url.com/health
 
 ### **Platform Support**
 - **Vercel**: https://vercel.com/support
-- **Railway**: https://railway.app/support
-- **Render**: https://render.com/docs
+- **Documentation**: https://vercel.com/docs
 
-### **GitHub Actions**
-- Check Actions tab for workflow logs
-- Review deployment status
-- Monitor build times and failures
+### **Deployment Status**
+- Check Vercel dashboard for deployment logs
+- Review function logs for backend issues
+- Monitor performance metrics
 
 ## 🎉 **Success Metrics**
 
@@ -210,4 +226,4 @@ After deployment, verify:
 - ✅ MongoDB connection is stable
 - ✅ All environment variables are set
 
-Your MalScanX application is now ready for production deployment! 🚀 
+Your MalScanX application is now ready for manual deployment via Vercel dashboard! 🚀 
